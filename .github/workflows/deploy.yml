@@ -1,17 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  # mainブランチへのpushで実行
+  # mainブランチへのpushで実行（PRがマージされた時も含む）
   push:
     branches:
       - main
-
-  # PRがmainブランチにマージされたときに実行
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
 
   # 手動実行も可能にする
   workflow_dispatch:
@@ -31,9 +24,6 @@ jobs:
   # ビルドジョブ（静的サイトなのでビルドは不要だが、構造として残す）
   build:
     runs-on: ubuntu-latest
-
-    # PRがマージされた場合のみ実行
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
       - name: Checkout
