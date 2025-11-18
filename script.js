@@ -208,10 +208,98 @@ function addMouseMoveEffect() {
     });
 }
 
+// Custom Cursor Effect
+function initCustomCursor() {
+    const cursor = document.querySelector('.cursor');
+    const cursorFollower = document.querySelector('.cursor-follower');
+
+    if (!cursor || !cursorFollower) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let followerX = 0;
+    let followerY = 0;
+    let isMoving = false;
+
+    // Update cursor position
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+
+        // Create trail effect
+        if (Math.random() > 0.7) {
+            createCursorTrail(mouseX, mouseY);
+        }
+    });
+
+    // Smooth follower animation
+    function animateFollower() {
+        const distX = mouseX - followerX;
+        const distY = mouseY - followerY;
+
+        followerX += distX * 0.15;
+        followerY += distY * 0.15;
+
+        cursorFollower.style.left = followerX + 'px';
+        cursorFollower.style.top = followerY + 'px';
+
+        requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    // Add active state on click
+    document.addEventListener('mousedown', () => {
+        cursor.classList.add('active');
+    });
+
+    document.addEventListener('mouseup', () => {
+        cursor.classList.remove('active');
+    });
+
+    // Scale cursor on hover over interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .project-card');
+
+    function updateInteractiveElements() {
+        const elements = document.querySelectorAll('a, button, .project-card');
+        elements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(2)';
+                cursorFollower.style.transform = 'scale(2)';
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursorFollower.style.transform = 'scale(1)';
+            });
+        });
+    }
+
+    // Update interactive elements after cards are loaded
+    setTimeout(updateInteractiveElements, 1000);
+}
+
+// Create cursor trail particles
+function createCursorTrail(x, y) {
+    const trail = document.createElement('div');
+    trail.className = 'cursor-trail';
+    trail.style.left = x + 'px';
+    trail.style.top = y + 'px';
+
+    document.body.appendChild(trail);
+
+    setTimeout(() => {
+        trail.remove();
+    }, 500);
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     loadProjects();
     addParallaxEffect();
+    initCustomCursor();
 
     // Add mouse move effect after cards are loaded
     setTimeout(() => {
